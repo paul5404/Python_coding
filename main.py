@@ -1164,27 +1164,74 @@ def trans(arrs):
 #     trans(get_com(s, 6))
 #     print()
 
-te = [False] * (10000 + 1)
-te[0] = te[1] = True
 
-for i in range(2, 101):
-    if te[i]:
-        continue
-    else:
-        for j in range(i * 2, 10000 + 1, i):
-            if not te[j]:
-                te[j] = True
+# 조합
+def johap(depth, idx):
+    if depth == M:
+        print(" ".join(map(str, arr)))
+        return
+
+    for i in range(idx, N + 1):
+        arr.append(i)
+        johap(depth + 1, i + 1)
+        arr.pop()
 
 
-ans = 0
-T = int(input())
-for _ in range(T):
-    N = int(input())
+# 순열
+def soonyul(depth):
+    if depth == M:
+        print(" ".join(map(str, arr)))
+        return
+    for i in range(1, N + 1):
+        # if i in arr:
+        #     continue
+        # else:
+        if not cond(arr + [i]):
+            continue
+        else:
+            arr.append(i)
+            soonyul(depth + 1)
+            arr.pop()
 
-    a = b = N // 2
-    for i in range(N // 2):
-        if not te[a] and not te[b]:
-            print(a, b)
-            break
-        a -= 1
-        b += 1
+
+def cond(ar):
+    return ar == sorted(ar)
+
+
+def soll(depth, idx, sub, l):
+    global cnt
+    if depth == l:
+        if sub == S:
+            cnt += 1
+        return
+    for i in range(idx, N):
+        soll(depth + 1, i + 1, sub + seq[i], l)
+
+
+def dfs_alpha(x, y, c):
+    global cnt
+
+    alpha_visit[ord(str(board[x][y])) - 65] = True
+    cnt = max(cnt, c)
+
+    for i in range(4):
+        nx = x + dx[i]
+        ny = y + dy[i]
+
+        if 0 <= nx < R and 0 <= ny < C:
+            if not alpha_visit[ord(str(board[nx][ny])) - 65]:
+                dfs_alpha(nx, ny, c+1)
+                alpha_visit[ord(str(board[nx][ny])) - 65] = False
+
+
+R, C = map(int, input().split())
+board = [list(input()) for _ in range(R)]
+# 'A' = 0 (65)
+alpha_visit = [False] * 26
+
+dx = [-1, 1, 0, 0]
+dy = [0, 0, -1, 1]
+cnt = 0
+
+dfs_alpha(0, 0, 1)
+print(cnt)
